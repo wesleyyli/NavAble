@@ -2,7 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 
 function App() {
-  async function speak(text: string) {
+  async function speak(text) {
     try {
       const response = await fetch('http://localhost:3001/speak', {
         method: 'POST',
