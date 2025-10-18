@@ -44,3 +44,38 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+## Additional setup for NavAble
+
+This project uses Geoapify for geocoding and routing, and ElevenLabs for high-quality text-to-speech / speech-to-text. A light backend proxy is required for ElevenLabs speech-to-text so your API key is never exposed client-side.
+
+1. Create a `.env` file from `.env.example` and set `REACT_APP_GEOAPIFY_KEY`.
+
+2. Implement a server endpoint (for example `/api/elevenlab-stt`) that accepts a multipart file upload (audio) and forwards it to ElevenLabs' STT endpoint using your ElevenLabs API key stored on the server. The endpoint should return JSON like `{ text: "transcribed text here" }`.
+
+3. The frontend component `src/components/ElevenLabsSpeechToText.tsx` will POST recorded audio to `/api/elevenlab-stt`, receive the transcribed text, and attempt to parse start/end locations.
+
+Note: For MVP you may use the browser Web Speech API for STT (no server required), but ElevenLabs offers higher quality and more consistent output.
+
+### Running the local proxy server (ElevenLabs STT + Geoapify routing)
+
+1. Change to the server folder and install dependencies:
+
+```powershell
+cd navable/server
+npm install
+```
+
+2. Create `.env` from `server/.env.example` and set `ELEVENLABS_API_KEY` and `GEOAPIFY_KEY`.
+
+3. Start the server:
+
+```powershell
+npm run start
+```
+
+The server will listen on port 4000 by default and expose:
+- `POST /api/elevenlab-stt` — accepts multipart file form field `file` and returns `{ text: '...' }`.
+- `POST /api/route` — accepts `{ start, end, accessibilityOptions }` and returns Geoapify routing JSON.
+
+In development you can run the React app (`npm start` from the `navable` folder) and the server concurrently. Ensure CORS or proxy settings are configured if needed.
