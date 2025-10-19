@@ -14,6 +14,25 @@ function App() {
         const errorText = await response.text();
         throw new Error(`TTS request failed: ${errorText}`);
       }
+        console.log(page);
+        if (page === "welcome") {
+          return (
+            <div>
+              <Welcome setPage={setPage}/>
+            </div>
+          );
+        }
+        else if (page === "map") {
+          return (
+            <div>
+              <div className='App-header'>
+
+              </div>
+              <Map   setPage={setPage}/>
+            </div>
+          );
+        }
+      }
 
       const audioBlob = await response.blob();
       const audioUrl = URL.createObjectURL(audioBlob);
