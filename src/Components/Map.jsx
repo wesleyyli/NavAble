@@ -5,6 +5,8 @@ import "maplibre-gl/dist/maplibre-gl.css";
 export default function MyMap() {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
+  let avoidsShow = true;
+  let avoidRoutes = true;
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -59,8 +61,43 @@ export default function MyMap() {
     const fromLoc = uwMarkers[1].coordinates;
     const toLoc = uwMarkers[2].coordinates;
 
-    const url = `https://api.geoapify.com/v1/routing?waypoints=${fromLoc.join(',')}|${toLoc.join(',')}&mode=walk&details=instruction_details&apiKey=${apiKey}`;
-    //const url = `https://api.geoapify.com/v1/routing?waypoints=47.6501,-122.3017|47.6536,-122.3078&mode=walk&apiKey=${apiKey}`;
+    // AVOIDS
+
+    const uwAvoids = [
+      [47.654315, -122.308154],  // Example avoid point 1
+    ];
+
+    if (avoidsShow) {
+      uwAvoids.forEach((marker) => {
+        const el = document.createElement("div");
+        el.className = "uw-avoid";
+        el.style.backgroundColor = "#FF0000";
+        el.style.width = "20px";
+        el.style.height = "20px";
+        el.style.borderRadius = "50%";
+        el.style.cursor = "pointer";
+        el.style.display = "flex";
+        el.style.alignItems = "center";
+        el.style.justifyContent = "center";
+        el.style.color = "#FFFFFF"; // White color for the "X"
+        el.style.fontFamily = "Arial, sans-serif";
+        el.style.fontWeight = "bolder";
+        el.style.fontSize = "14px";
+        el.textContent = "𓊍";
+  
+        new maplibregl.Marker({element: el})
+          .setLngLat([marker[1], marker[0]])
+          .setPopup(new maplibregl.Popup().setText("Stairs")) // Add popup
+          .addTo(mapRef.current);
+      });
+    }
+
+    let url = `https://api.geoapify.com/v1/routing?waypoints=${fromLoc.join(',')}|${toLoc.join(',')}&mode=walk`;
+    if (avoidRoutes && uwAvoids.length > 0) {
+      url += `&avoid=location:`;
+      url += uwAvoids.map((loc) => loc.join(',')).join('|');
+    }
+    url += `&details=route_details&apiKey=${apiKey}`;
 
     fetch(url)
     .then((response) => response.json())
@@ -68,11 +105,17 @@ export default function MyMap() {
       if (data.features && data.features.length > 0) {
         const route = data.features[0]; // Get the first route feature
 
-        // Add the route as a GeoJSON source
-        mapRef.current.addSource("route", {
-          type: "geojson",
-          data: route.geometry,
-        });
+        // Check if the source already exists
+        if (mapRef.current.getSource("route")) {
+          // Update the existing source's data
+          mapRef.current.getSource("route").setData(route.geometry);
+        } else {
+          // Add the route as a GeoJSON source
+          mapRef.current.addSource("route", {
+            type: "geojson",
+            data: route.geometry,
+          });
+        }
 
         // Add a line layer to display the route
         mapRef.current.addLayer({
@@ -92,7 +135,7 @@ export default function MyMap() {
         console.error("No route found in the response.");
       }
     })
-    .catch((error) => {
+    .catch((error) x=> {
       console.error("Error fetching route:", error);
     });
 
@@ -104,3 +147,4 @@ export default function MyMap() {
 
   return <div ref={containerRef} style={{ width: "100%", height: "100vh" }} />;
 }
+
