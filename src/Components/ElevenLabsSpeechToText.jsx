@@ -88,6 +88,14 @@ export default function ElevenLabsSpeechToText({ onLocations, onParsed }) {
     setRecording(false);
   }
 
+  function readPath(){
+    const jsonString = JSON.parse(data);
+    const pathDesc = JSON.parse(jsonString).pathDescription;
+    const pathArray = pathDesc.split(",");
+    for(i = 0; i < pathArray.length; i++){
+      speak(pathArray[i]);
+    }
+  }
 
   return (
     <div className="p-3 bg-white rounded-md shadow-sm">
