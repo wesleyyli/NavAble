@@ -1,12 +1,19 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { uwAvoids } from "./Stairs";
 
 export default function MyMap() {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
-  let avoidsShow = true;
-  let avoidRoutes = true;
+
+  const [avoidsShow, setAvoidsShow] = useState(true);
+  const [avoidRoutes, setAvoidRoutes] = useState(true);
+
+  const handleToggle = () => {
+    setAvoidsShow(prev => !prev);
+    setAvoidRoutes(prev => !prev);
+  };
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -61,11 +68,6 @@ export default function MyMap() {
     const fromLoc = uwMarkers[1].coordinates;
     const toLoc = uwMarkers[2].coordinates;
 
-    // AVOIDS
-
-    const uwAvoids = [
-      [47.654315, -122.308154],  // Example avoid point 1
-    ];
 
     if (avoidsShow) {
       uwAvoids.forEach((marker) => {
@@ -96,6 +98,7 @@ export default function MyMap() {
     if (avoidRoutes && uwAvoids.length > 0) {
       url += `&avoid=location:`;
       url += uwAvoids.map((loc) => loc.join(',')).join('|');
+      
     }
     url += `&details=route_details&apiKey=${apiKey}`;
 
@@ -143,7 +146,14 @@ export default function MyMap() {
       mapRef.current?.remove();
       mapRef.current = null;
     };
-  }, []);
+  }, [avoidsShow, avoidRoutes]);
 
-  return <div ref={containerRef} style={{ width: "100%", height: "100vh" }} />;
+  return (
+    <div>
+      <div ref={containerRef} style={{ width: "100%", height: "94vh" }} />
+      <div className="absolute top-[10.5em] right-[0.75em] flex flex-col space-y-2 bg-white p-1 rounded shadow-lg ">
+        <button className="w-10 h-10 bg-red-500 font-black" onClick={handleToggle}>𓊍</button>
+
+      </div>
+    </div>);
 }

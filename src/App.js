@@ -19,7 +19,11 @@ function App() {
     return (
       <div>
         <div className='App-header'>
-            <img className="h-12 m-4" src={logo} alt="Navable logo"></img>
+            <img 
+              className="h-12 m-4" 
+              src={logo} 
+              alt="Navable logo"
+              onClick={() => setPage("welcome")}></img>
         </div>
         <Map setPage={setPage}/>
       </div>
