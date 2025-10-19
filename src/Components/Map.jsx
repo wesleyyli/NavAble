@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { uwAvoids } from "./Stairs";
 
 export default function MyMap() {
   const containerRef = useRef(null);
@@ -66,6 +67,11 @@ export default function MyMap() {
     const uwAvoids = [
       [47.654315, -122.308154],  // Example avoid point 1
     ];
+    const url = `https://api.geoapify.com/v1/routing?waypoints=${fromLoc.join(',')}|${toLoc.join(',')}&mode=walk&details=instruction_details&apiKey=${apiKey}`;
+    //const url = `https://api.geoapify.com/v1/routing?waypoints=47.6501,-122.3017|47.6536,-122.3078&mode=walk&apiKey=${apiKey}`;
+    // AVOIDS
+
+    
 
     if (avoidsShow) {
       uwAvoids.forEach((marker) => {
@@ -92,7 +98,6 @@ export default function MyMap() {
       });
     }
 
-    let url = `https://api.geoapify.com/v1/routing?waypoints=${fromLoc.join(',')}|${toLoc.join(',')}&mode=walk`;
     if (avoidRoutes && uwAvoids.length > 0) {
       url += `&avoid=location:`;
       url += uwAvoids.map((loc) => loc.join(',')).join('|');
@@ -145,6 +150,6 @@ export default function MyMap() {
     };
   }, []);
 
-  return <div ref={containerRef} style={{ width: "100%", height: "100vh" }} />;
+  return <div ref={containerRef} style={{ width: "100%", height: "92vh" }} />;
 }
 
