@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { uwAvoids } from "./Stairs";
+import mic from "../Assets/Mic.png"
+import cross from "../Assets/cross.png"
+
 
 export default function MyMap() {
   const containerRef = useRef(null);
@@ -211,6 +214,15 @@ export default function MyMap() {
     }
   }
 
+  const handleToggle = () => {
+    setAvoidsShow(prev => !prev);
+    setAvoidRoutes(prev => !prev);
+  };
+
+
+  useEffect(() => {
+    handleLocations(fromLoc, toLoc);
+  }, [avoidRoutes]);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -242,9 +254,9 @@ export default function MyMap() {
         el.style.display = "flex";
         el.style.alignItems = "center";
         el.style.justifyContent = "center";
-        el.style.color = "#FFFFFF"; // White color for the "X"
+        el.style.color = "#FFFFFF"; // White color for the "shairs"
         el.style.fontFamily = "Arial, sans-serif";
-        el.style.fontWeight = "bolder";
+        el.style.fontWeight = "black";
         el.style.fontSize = "14px";
         el.textContent = "𓊍";
   
@@ -320,7 +332,32 @@ export default function MyMap() {
             </button>
           </div>
         </div>
-
+      <div className="fixed bottom-6 left-6 p-4 text-white">
+        <button
+          onClick={startRecording}
+          disabled={recording}
+          className=
+          {!recording 
+            ? "px-4 py-2 bg-sky-300 text-black w-[7em] h-[7em] rounded-full ml-2"
+            : "hidden"}
+        >
+          <img src={mic} alt="microphone icon"></img>
+        </button>
+        <button
+          onClick={stopRecording}
+          disabled={!recording}
+          className={!recording 
+            ? "hidden" 
+            : "px-4 py-2 bg-gray-300 text-black w-[7em] h-[7em] rounded-full ml-2"}
+        >
+          <img src={cross} alt="X icon"></img>
+        </button>
+      </div>
+      <div className="absolute top-[10.5em] right-[0.75em] flex flex-col space-y-2 bg-white p-1 rounded shadow-lg ">
+        <button 
+        className={avoidsShow ? "w-10 h-10 bg-red-500 font-black" : "w-10 h-10 bg-gray-500 font-black"} 
+        onClick={handleToggle}>𓊍</button>
+      </div>
         {/* Status Display */}
         {status && (
           <div className="text-sm text-gray-700 mt-2">

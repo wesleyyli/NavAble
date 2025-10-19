@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import './App.css';
-import Welcome from './Pages/Welcome';
+import Welcome from './pages/Welcome';
 import Map from './Components/Map';
-import SpeechDemo from './Pages/SpeechDemo';
+import SpeechDemo from './pages/SpeechDemo';
 import logo from './Assets/WhiteNavable.png'
 
 function App() {
@@ -19,7 +19,11 @@ function App() {
     return (
       <div>
         <div className='App-header'>
-            <img className="h-12 m-4" src={logo} alt="Navable logo"></img>
+            <img 
+              className="h-12 m-4" 
+              src={logo} 
+              alt="Navable logo"
+              onClick={() => setPage("welcome")}></img>
         </div>
         <Map setPage={setPage}/>
       </div>
