@@ -199,6 +199,11 @@ export default function MyMap() {
     setAvoidRoutes(prev => !prev);
   };
 
+
+  useEffect(() => {
+    handleLocations(fromLoc, toLoc);
+  }, [avoidRoutes]);
+
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
@@ -229,9 +234,9 @@ export default function MyMap() {
         el.style.display = "flex";
         el.style.alignItems = "center";
         el.style.justifyContent = "center";
-        el.style.color = "#FFFFFF"; // White color for the "X"
+        el.style.color = "#FFFFFF"; // White color for the "shairs"
         el.style.fontFamily = "Arial, sans-serif";
-        el.style.fontWeight = "bolder";
+        el.style.fontWeight = "black";
         el.style.fontSize = "14px";
         el.textContent = "𓊍";
   
@@ -282,7 +287,9 @@ export default function MyMap() {
         </button>
       </div>
       <div className="absolute top-[10.5em] right-[0.75em] flex flex-col space-y-2 bg-white p-1 rounded shadow-lg ">
-        <button className="w-10 h-10 bg-red-500 font-black" onClick={handleToggle}>𓊍</button>
+        <button 
+        className={avoidsShow ? "w-10 h-10 bg-red-500 font-black" : "w-10 h-10 bg-gray-500 font-black"} 
+        onClick={handleToggle}>𓊍</button>
 
       </div>
     </div>
