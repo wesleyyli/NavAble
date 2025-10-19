@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import './App.css';
 import TestPage from './testpage';
-import Welcome from './welcome';
-import Map from './map';
+import Welcome from './pages/Welcome';
+import Map from './Components/Map';
 
 function App() {
   const [page, setPage] = useState("welcome");
