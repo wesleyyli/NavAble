@@ -79,9 +79,6 @@ export default function ElevenLabsSpeechToText({ onLocations, onParsed }) {
     setRecording(false);
   }
 
-  function capitalizeWords(s) {
-    return s.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.substr(1).toLowerCase());
-  }
 
   return (
     <div className="p-3 bg-white rounded-md shadow-sm">
