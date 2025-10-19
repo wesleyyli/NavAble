@@ -2,7 +2,7 @@
   "name": "navable",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://wesleyyli.github.io/navable/src",
+  "homepage": "https://wesleyyli.github.io/navable/",
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@testing-library/dom": "^10.4.1",
