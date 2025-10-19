@@ -3,7 +3,6 @@ import './App.css';
 import Welcome from './pages/Welcome';
 import Map from './Components/Map';
 import SpeechDemo from './pages/SpeechDemo';
-import logo from './Assets/WhiteNavable.png'
 
 function App() {
   const [page, setPage] = useState("welcome");
@@ -18,13 +17,7 @@ function App() {
   else if (page === "map") {
     return (
       <div>
-        <div className='App-header'>
-            <img 
-              className="h-12 m-4" 
-              src={logo} 
-              alt="Navable logo"
-              onClick={() => setPage("welcome")}></img>
-        </div>
+        
         <Map setPage={setPage}/>
       </div>
     );

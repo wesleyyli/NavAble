@@ -21,25 +21,11 @@ function Welcome({setPage}) {
             <img className="w-3/5 animate-slideIn" src={logo} alt="Navable logo"></img>
             <button
             onClick={() => setPage("map")}
-            className="w-1/3 h-1/6 font-sans text-7xl p-2 rounded-xl text-black animate-slideUp bg-white/30"
+            className="w-2/5 h-1/6 font-display text-7xl p-2 rounded-3xl text-black animate-slideUp bg-white/70"
             type="button"
             >
             Start Mapping!
             </button>
-            {/* <button
-            onClick={() => speak("Testing")}
-            className="mt-4 p-2 bg-orange-500 rounded text-white"
-            type="button"
-            >
-            Test "Speak"
-            </button>
-            <button
-            onClick={() => setPage("speechdemo")}
-            className="mt-4 p-2 bg-red-500 rounded text-white"
-            type="button"
-            >
-            Test Speech Input
-            </button> */}
         </div>
         
         

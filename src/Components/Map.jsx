@@ -2,11 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { uwAvoids } from "./Stairs";
-import mic from "../Assets/Mic.png"
-import cross from "../Assets/cross.png"
+import mic from "../Assets/Mic.png";
+import cross from "../Assets/cross.png";
+import logo from "../Assets/WhiteNavable.png";
+import send from "../Assets/send.png"
 
 
-export default function MyMap() {
+export default function MyMap({setPage}) {
   const containerRef = useRef(null);
   const [avoidsShow, setAvoidsShow] = useState(true);
   const [avoidRoutes, setAvoidRoutes] = useState(true);
@@ -303,9 +305,32 @@ export default function MyMap() {
   }, [fromLoc, toLoc, avoidRoutes, avoidsShow]);
 
   return (<div>
+    {/* Text Input Section */}
+      <div className='App-header'>
+          <img 
+            className="h-12 m-4" 
+            src={logo} 
+            alt="Navable logo"
+            onClick={() => setPage("welcome")}></img>
+            <input
+              type="text"
+              value={textInput}
+              onChange={(e) => setTextInput(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleTextSubmit()}
+              placeholder="e.g., from HUB to Mary Gates Hall"
+              className="px-3 m-2 w-1/2 h-10 py-2 border text-sm text-black bg-gray-100 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button 
+              onClick={handleTextSubmit}
+              className="px-4 py-2 h-10 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              <img className="h-6 invert" src={send} alt="send button"></img>
+            </button>
+      </div>
+      <div ref={containerRef} style={{ width: "100%", height: "94vh" }} />
       {/* Route Display Banner */}
       {fromName && toName && (
-        <div className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg z-10">
+        <div className="absolute top-12 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg z-10">
           <p className="text-sm font-semibold">
             Currently Displaying: <span className="font-bold">{fromName}</span> to <span className="font-bold">{toName}</span>
           </p>
@@ -314,56 +339,13 @@ export default function MyMap() {
       
       {/* Error Banner */}
       {status === 'Invalid Location' && (
-        <div className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg z-10">
+        <div className="absolute top-12 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg z-10">
           <p className="text-sm font-semibold">
             Sorry, we couldn't quite catch that. Please try again.
           </p>
         </div>
       )}
-      
-      <div ref={containerRef} style={{ width: "100%", height: "94vh" }} />
-      <div className="absolute top-10 left-10 bg-white p-4 rounded-lg shadow-lg max-w-md">
-        {/* Voice Input Section */}
-        <div className="mb-4">
-          <p className="text-xs font-medium text-gray-600 mb-2">Voice Input:</p>
-          <div className="flex gap-2">
-            <button
-              onClick={startRecording}
-              disabled={recording}
-              className="px-4 py-2 bg-green-600 text-white rounded-md disabled:bg-gray-300"
-            >
-              Record
-            </button>
-            <button
-              onClick={stopRecording}
-              disabled={!recording}
-              className="px-4 py-2 bg-gray-300 text-black rounded-md disabled:bg-gray-100"
-            >
-              Stop
-            </button>
-          </div>
-        </div>
-
-        {/* Text Input Section */}
-        <div className="mb-2">
-          <p className="text-xs font-medium text-gray-600 mb-2">Text Input:</p>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={textInput}
-              onChange={(e) => setTextInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleTextSubmit()}
-              placeholder="e.g., from HUB to Mary Gates Hall"
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button 
-              onClick={handleTextSubmit}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            >
-              Go
-            </button>
-          </div>
-        </div>
+      {/* Voice Input Section */}
       <div className="fixed bottom-6 left-6 p-4 text-white">
         <button
           onClick={startRecording}
@@ -385,9 +367,11 @@ export default function MyMap() {
           <img src={cross} alt="X icon"></img>
         </button>
       </div>
-      <div className="absolute top-[10.5em] right-[0.75em] flex flex-col space-y-2 bg-white p-1 rounded shadow-lg ">
+
+
+      <div className="absolute top-[10.5em] right-[0.75em] flex flex-col space-y-2 bg-white p-1 rounded-md shadow-lg ">
         <button 
-        className={avoidsShow ? "w-10 h-10 bg-red-500 font-black" : "w-10 h-10 bg-gray-500 font-black"} 
+        className={avoidsShow ? "w-10 h-10 bg-red-500 rounded-md font-black" : "w-10 h-10 rounded-md bg-gray-500 font-black"} 
         onClick={handleToggle}>𓊍</button>
       </div>
         {/* Status Display */}
@@ -397,7 +381,6 @@ export default function MyMap() {
           </div>
         )}
       </div>
-    </div>
   );
 
   }
