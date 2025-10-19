@@ -2,8 +2,7 @@ import { useState } from 'react';
 import './App.css';
 import TestPage from './testpage';
 import Welcome from './welcome';
-
-
+import Map from './map';
 
 function App() {
   const [page, setPage] = useState("welcome");
@@ -13,24 +12,17 @@ function App() {
     return (
       <div>
         <Welcome setPage={setPage}/>
-        
       </div>
     );
   }
-  else if (page === "testpage") {
+  else if (page === "map") {
     return (
       <div>
-        <TestPage setPage={setPage}/>
-        
+        <Map setPage={setPage}/>
       </div>
     );
   }
-  
-
-  
-
 }
-
 
 export async function speak(text) {
   try {
