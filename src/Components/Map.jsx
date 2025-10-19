@@ -14,6 +14,8 @@ export default function MyMap() {
   const mediaRef = useRef(null);
   const [fromLoc, setFromLoc] = useState(null);
   const [toLoc, setToLoc] = useState(null);
+  const [fromName, setFromName] = useState(null);
+  const [toName, setToName] = useState(null);
 
   const apiKey = process.env.REACT_APP_GEOAPIFY_KEY;
     if (!apiKey) {
@@ -70,6 +72,10 @@ export default function MyMap() {
 
       const parsed = data.parsedNames || data.parsed || { start: null, end: null };
       const matched = data.matched || null;
+
+      // Store location names
+      setFromName(matched?.start?.name || parsed.start || null);
+      setToName(matched?.end?.name || parsed.end || null);
 
       const startCoord = matched?.start
         ? { lat: matched.start.latitude, lon: matched.start.longitude }
@@ -277,6 +283,15 @@ export default function MyMap() {
   }, [fromLoc, toLoc, avoidRoutes, avoidsShow]);
 
   return (<div>
+      {/* Route Display Banner */}
+      {fromName && toName && (
+        <div className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg z-10">
+          <p className="text-sm font-semibold">
+            Currently Displaying: <span className="font-bold">{fromName}</span> to <span className="font-bold">{toName}</span>
+          </p>
+        </div>
+      )}
+      
       <div ref={containerRef} style={{ width: "100%", height: "94vh" }} />
       <div className="absolute top-10 left-10 bg-white p-4 rounded-lg shadow-lg max-w-md">
         {/* Voice Input Section */}
