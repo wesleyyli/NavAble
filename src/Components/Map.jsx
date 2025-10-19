@@ -330,7 +330,7 @@ export default function MyMap({setPage}) {
       <div ref={containerRef} style={{ width: "100%", height: "94vh" }} />
       {/* Route Display Banner */}
       {fromName && toName && (
-        <div className="absolute top-12 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg z-10">
+        <div className="absolute top-16 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg z-10">
           <p className="text-sm font-semibold">
             Currently Displaying: <span className="font-bold">{fromName}</span> to <span className="font-bold">{toName}</span>
           </p>
@@ -339,7 +339,7 @@ export default function MyMap({setPage}) {
       
       {/* Error Banner */}
       {status === 'Invalid Location' && (
-        <div className="absolute top-12 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg z-10">
+        <div className="absolute top-16 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg z-10">
           <p className="text-sm font-semibold">
             Sorry, we couldn't quite catch that. Please try again.
           </p>
