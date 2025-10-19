@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import './App.css';
-import Welcome from './Pages/Welcome';
+import Welcome from './pages/Welcome';
 import Map from './Components/Map';
-import SpeechDemo from './Pages/SpeechDemo';
+import SpeechDemo from './pages/SpeechDemo';
 import logo from './Assets/WhiteNavable.png'
 
 function App() {
@@ -43,7 +43,7 @@ function App() {
 
 export async function speak(text) {
   try {
-    const response = await fetch('http://localhost:3001/speak', {
+    const response = await fetch('http://localhost:3002/speak', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text }),

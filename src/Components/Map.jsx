@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { uwAvoids } from "./Stairs";
+import { speak } from '../App';
 
 export default function MyMap() {
   const containerRef = useRef(null);
@@ -76,11 +77,14 @@ export default function MyMap() {
       const endCoord = matched?.end
         ? { lat: matched.end.latitude, lon: matched.end.longitude }
         : null;
-
+      const directions = matched?.pathDescription
+        ? { directions: matched.pathDescription.split(",")}
+        : null;
       console.log('Start Coordinates:', startCoord);
       console.log('End Coordinates:', endCoord);
       handleLocations(startCoord, endCoord);
-
+      console.log('Reading directions');
+      readPath(directions);
       setStatus('Done');
     } catch (error) {
       console.error('Error during parsing:', error);
@@ -194,6 +198,11 @@ export default function MyMap() {
     }
   }
 
+  function readPath(pathArray){
+    for(let i = 0; i < pathArray.length; i++){
+      speak(pathArray[i]);
+    }
+  }
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
