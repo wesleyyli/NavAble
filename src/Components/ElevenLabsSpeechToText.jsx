@@ -80,19 +80,11 @@ export default function ElevenLabsSpeechToText({ onLocations, onParsed }) {
   }
 
   function readPath(){
-    let startIndex = 0;
-    let endIndex = 0;
-    while(!transcript.startsWith("Path Description", startIndex)){
-      startIndex += 1;
-    }
-    endIndex = startIndex;
-    while(!transcript.startsWith("start", endIndex)){
-      endIndex += 1;
-    }
-    const description = transcript.substring(beginIndex + 1, endIndex);
-    const arr = transcript.split(",");
-    for(i = 0; i < arr.length; i++){
-      speak(arr[i]);
+    const jsonString = JSON.parse(data);
+    const pathDesc = JSON.parse(jsonString).pathDescription;
+    const pathArray = pathDesc.split(",");
+    for(i = 0; i < pathArray.length; i++){
+      speak(pathArray[i]);
     }
   }
 
