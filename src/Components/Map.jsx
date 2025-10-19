@@ -62,14 +62,8 @@ export default function MyMap() {
     const fromLoc = uwMarkers[1].coordinates;
     const toLoc = uwMarkers[2].coordinates;
 
-    // AVOIDS
-
-    const uwAvoids = [
-      [47.654315, -122.308154],  // Example avoid point 1
-    ];
     const url = `https://api.geoapify.com/v1/routing?waypoints=${fromLoc.join(',')}|${toLoc.join(',')}&mode=walk&details=instruction_details&apiKey=${apiKey}`;
     //const url = `https://api.geoapify.com/v1/routing?waypoints=47.6501,-122.3017|47.6536,-122.3078&mode=walk&apiKey=${apiKey}`;
-    // AVOIDS
 
     
 
@@ -150,6 +144,6 @@ export default function MyMap() {
     };
   }, []);
 
-  return <div ref={containerRef} style={{ width: "100%", height: "92vh" }} />;
+  return <div ref={containerRef} style={{ width: "100%", height: "94vh" }} />;
 }
 

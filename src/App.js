@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import './App.css';
-import TestPage from './testpage';
-import Welcome from './pages/Welcome';
+import Welcome from './Pages/Welcome';
 import Map from './Components/Map';
 
 function App() {
   const [page, setPage] = useState("welcome");
 
-  console.log(page);
   if (page === "welcome") {
     return (
       <div>
