@@ -2,8 +2,11 @@
 
 # dependencies
 /node_modules
+/src/node_modules
+/elevenlabs-tts/node_modules
 /.pnp
 .pnp.js
+/navable
 
 # testing
 /coverage
