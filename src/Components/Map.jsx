@@ -72,10 +72,18 @@ export default function MyMap() {
         const el = document.createElement("div");
         el.className = "uw-avoid";
         el.style.backgroundColor = "#FF0000";
-        el.style.width = "12px";
-        el.style.height = "12px";
+        el.style.width = "20px";
+        el.style.height = "20px";
         el.style.borderRadius = "50%";
         el.style.cursor = "pointer";
+        el.style.display = "flex";
+        el.style.alignItems = "center";
+        el.style.justifyContent = "center";
+        el.style.color = "#FFFFFF"; // White color for the "X"
+        el.style.fontFamily = "Arial, sans-serif";
+        el.style.fontWeight = "bolder";
+        el.style.fontSize = "14px";
+        el.textContent = "𓊍";
   
         new maplibregl.Marker({element: el})
           .setLngLat([marker[1], marker[0]])
@@ -90,7 +98,6 @@ export default function MyMap() {
       url += uwAvoids.map((loc) => loc.join(',')).join('|');
     }
     url += `&details=route_details&apiKey=${apiKey}`;
-    console.log("Routing URL:", url);
 
     fetch(url)
     .then((response) => response.json())
@@ -98,11 +105,17 @@ export default function MyMap() {
       if (data.features && data.features.length > 0) {
         const route = data.features[0]; // Get the first route feature
 
-        // Add the route as a GeoJSON source
-        mapRef.current.addSource("route", {
-          type: "geojson",
-          data: route.geometry,
-        });
+        // Check if the source already exists
+        if (mapRef.current.getSource("route")) {
+          // Update the existing source's data
+          mapRef.current.getSource("route").setData(route.geometry);
+        } else {
+          // Add the route as a GeoJSON source
+          mapRef.current.addSource("route", {
+            type: "geojson",
+            data: route.geometry,
+          });
+        }
 
         // Add a line layer to display the route
         mapRef.current.addLayer({
