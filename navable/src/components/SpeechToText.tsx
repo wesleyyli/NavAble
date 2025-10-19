@@ -8,8 +8,6 @@ type Props = {
   onRouteResult?: (routeData: any) => void;
   /** Optional accessibility options forwarded to the backend routing request */
   accessibilityOptions?: { mobility?: boolean; vision?: boolean; cognitive?: boolean };
-  /** Optional callback when start/end names are parsed from transcript */
-  onParsed?: (startName: string | null, endName: string | null) => void;
 };
 
 export default function SpeechToText({ onRouteResult, accessibilityOptions }: Props) {
@@ -39,7 +37,7 @@ export default function SpeechToText({ onRouteResult, accessibilityOptions }: Pr
 
   return (
     <div>
-      <ElevenLabsSpeechToText onLocations={handleLocations} onParsed={ (s,e) => { /* noop default */ } } />
+      <ElevenLabsSpeechToText onLocations={handleLocations} />
       <div className="mt-2 text-sm text-gray-700">{status}</div>
     </div>
   );
