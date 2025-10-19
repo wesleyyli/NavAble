@@ -135,7 +135,7 @@ export default function MyMap() {
         console.error("No route found in the response.");
       }
     })
-    .catch((error) x=> {
+    .catch((error) => {
       console.error("Error fetching route:", error);
     });
 
