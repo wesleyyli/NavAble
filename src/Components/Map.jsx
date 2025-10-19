@@ -5,6 +5,8 @@ import "maplibre-gl/dist/maplibre-gl.css";
 export default function MyMap() {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
+  let avoidsShow = true;
+  let avoidRoutes = true;
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -59,8 +61,36 @@ export default function MyMap() {
     const fromLoc = uwMarkers[1].coordinates;
     const toLoc = uwMarkers[2].coordinates;
 
-    const url = `https://api.geoapify.com/v1/routing?waypoints=${fromLoc.join(',')}|${toLoc.join(',')}&mode=walk&details=instruction_details&apiKey=${apiKey}`;
-    //const url = `https://api.geoapify.com/v1/routing?waypoints=47.6501,-122.3017|47.6536,-122.3078&mode=walk&apiKey=${apiKey}`;
+    // AVOIDS
+
+    const uwAvoids = [
+      [47.654315, -122.308154],  // Example avoid point 1
+    ];
+
+    if (avoidsShow) {
+      uwAvoids.forEach((marker) => {
+        const el = document.createElement("div");
+        el.className = "uw-avoid";
+        el.style.backgroundColor = "#FF0000";
+        el.style.width = "12px";
+        el.style.height = "12px";
+        el.style.borderRadius = "50%";
+        el.style.cursor = "pointer";
+  
+        new maplibregl.Marker({element: el})
+          .setLngLat([marker[1], marker[0]])
+          .setPopup(new maplibregl.Popup().setText("Stairs")) // Add popup
+          .addTo(mapRef.current);
+      });
+    }
+
+    let url = `https://api.geoapify.com/v1/routing?waypoints=${fromLoc.join(',')}|${toLoc.join(',')}&mode=walk`;
+    if (avoidRoutes && uwAvoids.length > 0) {
+      url += `&avoid=location:`;
+      url += uwAvoids.map((loc) => loc.join(',')).join('|');
+    }
+    url += `&details=route_details&apiKey=${apiKey}`;
+    console.log("Routing URL:", url);
 
     fetch(url)
     .then((response) => response.json())
