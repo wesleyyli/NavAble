@@ -2,7 +2,8 @@ import React, { useState, useRef } from 'react';
 
 type Props = {
   onLocations?: (start: { lat: number; lon: number } | null, end: { lat: number; lon: number } | null) => void;
-  onParsed?: (startName: string | null, endName: string | null) => void;
+  // Optional callback to receive parsed name objects (start, end) for debugging or UI
+  onParsed?: (start: any, end: any) => void;
 };
 
 /**
@@ -41,16 +42,52 @@ export default function ElevenLabsSpeechToText({ onLocations, onParsed }: Props)
           const data = await resp.json();
           const text: string = data.text ?? data.transcript ?? '';
           setTranscript(text);
-          setStatus('Parsing locations...');
-          const { startName, endName } = parseStartEnd(text);
-          // Notify parent of parsed building names (before geocoding)
-          onParsed?.(startName ?? null, endName ?? null);
-          // resolve via Geoapify
-          const geoKey = process.env.REACT_APP_GEOAPIFY_KEY;
-          const startCoord = startName ? await geocodePlace(startName, geoKey) : null;
-          const endCoord = endName ? await geocodePlace(endName, geoKey) : null;
-          setStatus('Done');
-          onLocations?.(startCoord, endCoord);
+          setStatus('Parsing locations via server (Gemini)...');
+          // Send transcript to server which calls Gemini and returns raw + parsed
+          try {
+            const resp = await fetch('/api/parse-with-gemini', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ text }),
+            });
+            if (!resp.ok) throw new Error('parse-with-gemini failed');
+            const data = await resp.json();
+            // Support both old and new shapes. New minimal shape is { start:{name,longitude,latitude}, end:{...} }
+            const parsedMinimal = data || {};
+            const raw = data.raw || JSON.stringify(data.parsed || data.parsedNames || parsedMinimal || {});
+            const parsed = data.parsedNames || data.parsed || parsedMinimal || { start: null, end: null };
+            const matched = data.matched || null;
+            setStatus('Done');
+
+            // If matched contains coords (server matching uw.txt), prefer those
+            // Prefer minimal parsed shape with longitude/latitude
+            const startCoord = (parsed && parsed.start && parsed.start.latitude !== undefined && parsed.start.longitude !== undefined)
+              ? { lat: parsed.start.latitude, lon: parsed.start.longitude }
+              : (matched && matched.start && (matched.start.latitude !== undefined && matched.start.longitude !== undefined))
+                ? { lat: matched.start.latitude, lon: matched.start.longitude }
+                : (parsed && parsed.start && parsed.start.lat !== undefined && parsed.start.lon !== undefined)
+                  ? { lat: parsed.start.lat, lon: parsed.start.lon }
+                  : null;
+
+            const endCoord = (parsed && parsed.end && parsed.end.latitude !== undefined && parsed.end.longitude !== undefined)
+              ? { lat: parsed.end.latitude, lon: parsed.end.longitude }
+              : (matched && matched.end && (matched.end.latitude !== undefined && matched.end.longitude !== undefined))
+                ? { lat: matched.end.latitude, lon: matched.end.longitude }
+                : (parsed && parsed.end && parsed.end.lat !== undefined && parsed.end.lon !== undefined)
+                  ? { lat: parsed.end.lat, lon: parsed.end.lon }
+                  : null;
+
+            // store a debug transcript including raw Gemini output in the transcript field for visibility
+            setTranscript(t => (t ?? '') + '\n\nGemini raw:\n' + raw);
+
+            // Call onParsed with the parsed name objects (start, end) for consumers that want them
+            onParsed?.(parsed.start ?? null, parsed.end ?? null);
+
+            onLocations?.(startCoord, endCoord);
+          } catch (err) {
+            console.error('Error calling parse-with-gemini', err);
+            setStatus('Error parsing locations');
+          }
         } catch (e) {
           console.error(e);
           setStatus('Error calling STT service');
@@ -83,55 +120,35 @@ export default function ElevenLabsSpeechToText({ onLocations, onParsed }: Props)
     let startName: string | null = null;
     let endName: string | null = null;
 
-    // UW-specific building name and acronym map
-    const uwMap: { [key: string]: string } = {
-      'mary gates hall': 'Mary Gates Hall',
-      'mgh': 'Mary Gates Hall',
-      'cse1': 'CSE1 Building',
-      'cse 1': 'CSE1 Building',
-      'the hub': 'Husky Union Building',
-      'hub': 'Husky Union Building',
-      'husky union building': 'Husky Union Building',
-      'suzzallo': 'Suzzallo Library',
-      'suzzallo library': 'Suzzallo Library',
-      'odegaard': 'Odegaard Undergraduate Library',
-    };
-
-    function mapUW(name: string) {
-      const k = name.trim().toLowerCase();
-      return uwMap[k] ?? null;
-    }
-
     const fromTo = lower.match(/from\s+([^,]+?)\s+(to|->|towards)\s+(.+)/);
     if (fromTo) {
-      // try mapping to UW names first
-      startName = mapUW(fromTo[1].trim()) ?? capitalizeWords(fromTo[1].trim());
-      endName = mapUW(fromTo[3].trim()) ?? capitalizeWords(fromTo[3].trim());
+      startName = capitalizeWords(fromTo[1].trim());
+      endName = capitalizeWords(fromTo[3].trim());
       return { startName, endName };
     }
 
     const match = lower.match(/(?:start(?:ing)?(?:at)?|from)\s+([^,]+?)\s*(?:and|,)\s*(?:end(?:ing)?(?:at)?|to)\s+(.+)/);
     if (match) {
-      startName = mapUW(match[1].trim()) ?? capitalizeWords(match[1].trim());
-      endName = mapUW(match[2].trim()) ?? capitalizeWords(match[2].trim());
+      startName = capitalizeWords(match[1].trim());
+      endName = capitalizeWords(match[2].trim());
       return { startName, endName };
     }
 
     // fallback: try to extract two place-like phrases by splitting on ' to ' or ' and '
     const parts = text.split(/\bto\b|\band\b/i).map(p => p.trim()).filter(Boolean);
     if (parts.length >= 2) {
-      startName = mapUW(parts[0]) ?? capitalizeWords(parts[0]);
-      endName = mapUW(parts[1]) ?? capitalizeWords(parts[1]);
+      startName = capitalizeWords(parts[0]);
+      endName = capitalizeWords(parts[1]);
       return { startName, endName };
     }
 
     // last fallback: pick first two capitalized sequences
     const caps = Array.from(text.matchAll(/[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*/g)).map(m => m[0]);
     if (caps.length >= 2) {
-      startName = mapUW(caps[0]) ?? caps[0];
-      endName = mapUW(caps[1]) ?? caps[1];
+      startName = caps[0];
+      endName = caps[1];
     } else if (caps.length === 1) {
-      startName = mapUW(caps[0]) ?? caps[0];
+      startName = caps[0];
     }
     return { startName, endName };
   }
@@ -141,66 +158,8 @@ export default function ElevenLabsSpeechToText({ onLocations, onParsed }: Props)
   }
 
   async function geocodePlace(name: string, geoKey?: string | null) {
-    // Use server-side geocode proxy to avoid exposing API key
-    const tryGeocode = async (q: string) => {
-      try {
-        const r = await fetch(`/api/geocode?text=${encodeURIComponent(q)}`);
-        if (!r.ok) return null;
-        const j = await r.json();
-        const f = j.features && j.features[0];
-        if (!f) return null;
-        const [lon, lat] = f.geometry.coordinates;
-        return { lat, lon };
-      } catch (e) {
-        console.error('geocode error for', q, e);
-        return null;
-      }
-    };
-
-    // Try the original name first, then common UW-expanded variants
-    const variants = [
-      name,
-      // If mapping exists, try mapped canonical name (e.g., 'Odegaard Undergraduate Library')
-      name + ' University of Washington',
-      name + ' UW Seattle',
-      name + ' Seattle',
-    ];
-
-    // Also if the parser maps to a canonical UW name, try that first
-    const mapped = ((): string | null => {
-      const k = name.trim().toLowerCase();
-      const uwMap: { [key: string]: string } = {
-        'mary gates hall': 'Mary Gates Hall',
-        'mgh': 'Mary Gates Hall',
-        'cse1': 'CSE1 Building',
-        'cse 1': 'CSE1 Building',
-        'the hub': 'Husky Union Building',
-        'hub': 'Husky Union Building',
-        'husky union building': 'Husky Union Building',
-        'suzzallo': 'Suzzallo Library',
-        'suzzallo library': 'Suzzallo Library',
-        'odegaard': 'Odegaard Undergraduate Library',
-      };
-      return uwMap[k] ?? null;
-    })();
-
-    const tried = new Set<string>();
-    if (mapped) variants.unshift(mapped);
-
-    for (const q of variants) {
-      if (!q || tried.has(q.toLowerCase())) continue;
-      tried.add(q.toLowerCase());
-      const result = await tryGeocode(q);
-      if (result) return result;
-    }
-
-    // As a last resort, try adding 'University of Washington' to the canonical mapped name
-    if (!mapped && name) {
-      const q = name + ' University of Washington';
-      const r = await tryGeocode(q);
-      if (r) return r;
-    }
-
+    // Client-side geocoding removed - server now provides verified coordinates via Gemini/Nominatim.
+    console.warn('geocodePlace called but client-side geocoding has been disabled. Use server parse endpoint instead.');
     return null;
   }
 
