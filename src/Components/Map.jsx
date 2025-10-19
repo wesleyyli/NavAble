@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { uwAvoids } from "./Stairs";
+import mic from "../Assets/Mic.png"
+import cross from "../Assets/cross.png"
+
 
 export default function MyMap() {
   const containerRef = useRef(null);
@@ -270,20 +273,26 @@ export default function MyMap() {
 
   return (<div>
       <div ref={containerRef} style={{ width: "100%", height: "94vh" }} />
-      <div className="absolute top-10 left-10">
+      
+      <div className="fixed bottom-6 left-6 p-4 text-white">
         <button
           onClick={startRecording}
           disabled={recording}
-          className="px-4 py-2 bg-green-600 text-white rounded-md"
+          className=
+          {!recording 
+            ? "px-4 py-2 bg-sky-300 text-black w-[7em] h-[7em] rounded-full ml-2"
+            : "hidden"}
         >
-          Record
+          <img src={mic} alt="microphone icon"></img>
         </button>
         <button
           onClick={stopRecording}
           disabled={!recording}
-          className="px-4 py-2 bg-gray-300 text-black rounded-md ml-2"
+          className={!recording 
+            ? "hidden" 
+            : "px-4 py-2 bg-gray-300 text-black w-[7em] h-[7em] rounded-full ml-2"}
         >
-          Stop
+          <img src={cross} alt="X icon"></img>
         </button>
       </div>
       <div className="absolute top-[10.5em] right-[0.75em] flex flex-col space-y-2 bg-white p-1 rounded shadow-lg ">
