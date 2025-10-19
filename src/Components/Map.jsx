@@ -12,6 +12,7 @@ export default function MyMap() {
   const [avoidRoutes, setAvoidRoutes] = useState(true);
   const [recording, setRecording] = useState(false);
   const [status, setStatus] = useState(null);
+  const [textInput, setTextInput] = useState('');
   const mapRef = useRef(null);
   const mediaRef = useRef(null);
   const [fromLoc, setFromLoc] = useState(null);
@@ -151,6 +152,22 @@ export default function MyMap() {
     }
   };
 
+  async function handleTextSubmit() {
+    if (!textInput.trim()) {
+      setStatus('Please enter a navigation request');
+      return;
+    }
+
+    setStatus('Parsing locations via Gemini...');
+
+    try {
+      await handleParsing(textInput);
+    } catch (error) {
+      console.error('Error processing text input:', error);
+      setStatus('Error processing text input');
+    }
+  }
+
   async function startRecording() {
     setStatus('Requesting microphone...');
     try {
@@ -273,7 +290,48 @@ export default function MyMap() {
 
   return (<div>
       <div ref={containerRef} style={{ width: "100%", height: "94vh" }} />
-      
+      <div className="absolute top-10 left-10 bg-white p-4 rounded-lg shadow-lg max-w-md">
+        {/* Voice Input Section */}
+        <div className="mb-4">
+          <p className="text-xs font-medium text-gray-600 mb-2">Voice Input:</p>
+          <div className="flex gap-2">
+            <button
+              onClick={startRecording}
+              disabled={recording}
+              className="px-4 py-2 bg-green-600 text-white rounded-md disabled:bg-gray-300"
+            >
+              Record
+            </button>
+            <button
+              onClick={stopRecording}
+              disabled={!recording}
+              className="px-4 py-2 bg-gray-300 text-black rounded-md disabled:bg-gray-100"
+            >
+              Stop
+            </button>
+          </div>
+        </div>
+
+        {/* Text Input Section */}
+        <div className="mb-2">
+          <p className="text-xs font-medium text-gray-600 mb-2">Text Input:</p>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={textInput}
+              onChange={(e) => setTextInput(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleTextSubmit()}
+              placeholder="e.g., from HUB to Mary Gates Hall"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button 
+              onClick={handleTextSubmit}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Go
+            </button>
+          </div>
+        </div>
       <div className="fixed bottom-6 left-6 p-4 text-white">
         <button
           onClick={startRecording}
@@ -299,7 +357,13 @@ export default function MyMap() {
         <button 
         className={avoidsShow ? "w-10 h-10 bg-red-500 font-black" : "w-10 h-10 bg-gray-500 font-black"} 
         onClick={handleToggle}>𓊍</button>
-
+      </div>
+        {/* Status Display */}
+        {status && (
+          <div className="text-sm text-gray-700 mt-2">
+            <strong>Status:</strong> {status}
+          </div>
+        )}
       </div>
     </div>
   );

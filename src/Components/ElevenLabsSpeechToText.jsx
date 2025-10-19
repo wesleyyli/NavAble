@@ -4,6 +4,7 @@ export default function ElevenLabsSpeechToText({ onLocations, onParsed }) {
   const [recording, setRecording] = useState(false);
   const [status, setStatus] = useState(null);
   const [transcript, setTranscript] = useState(null);
+  const [textInput, setTextInput] = useState('');
   const mediaRef = useRef(null);
 
   async function startRecording() {
@@ -88,15 +89,84 @@ export default function ElevenLabsSpeechToText({ onLocations, onParsed }) {
     setRecording(false);
   }
 
+  async function handleTextSubmit() {
+    if (!textInput.trim()) {
+      setStatus('Please enter a navigation request');
+      return;
+    }
+
+    setStatus('Parsing locations via Gemini...');
+    setTranscript(null);
+
+    try {
+      const resp = await fetch('/api/parse-with-gemini', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: textInput }),
+      });
+
+      if (!resp.ok) throw new Error('parse-with-gemini failed');
+      
+      const data = await resp.json();
+      const raw = data.raw || JSON.stringify(data.parsed || data.parsedNames || {});
+      const parsed = data.parsedNames || data.parsed || { start: null, end: null };
+      const matched = data.matched || null;
+      setStatus('Done');
+
+      const startCoord = (matched && matched.start && (matched.start.latitude !== undefined && matched.start.longitude !== undefined))
+        ? { lat: matched.start.latitude, lon: matched.start.longitude }
+        : (matched && matched.start && (matched.start.lat !== undefined && matched.start.lon !== undefined))
+          ? { lat: matched.start.lat, lon: matched.start.lon }
+          : (parsed.start && parsed.start.lat && parsed.start.lon ? { lat: parsed.start.lat, lon: parsed.start.lon } : null);
+      const endCoord = (matched && matched.end && (matched.end.latitude !== undefined && matched.end.longitude !== undefined))
+        ? { lat: matched.end.latitude, lon: matched.end.longitude }
+        : (matched && matched.end && (matched.end.lat !== undefined && matched.end.lon !== undefined))
+          ? { lat: matched.end.lat, lon: matched.end.lon }
+          : (parsed.end && parsed.end.lat && parsed.end.lon ? { lat: parsed.end.lat, lon: parsed.end.lon } : null);
+
+      setTranscript('Input: ' + textInput + '\n\nGemini raw:\n' + raw);
+      onParsed?.(parsed.start ?? null, parsed.end ?? null);
+      onLocations?.(startCoord, endCoord);
+    } catch (err) {
+      console.error('Error calling parse-with-gemini', err);
+      setStatus('Error parsing locations');
+    }
+  }
+
 
   return (
     <div className="p-3 bg-white rounded-md shadow-sm">
       <h4 className="font-semibold">ElevenLabs STT (proxy)</h4>
-      <p className="text-sm text-gray-500">Record voice for start and end location. Backend proxy required at <code>/api/elevenlab-stt</code>.</p>
+      <p className="text-sm text-gray-500">Record voice or type your navigation request.</p>
 
-      <div className="mt-3 flex gap-2">
-        <button onClick={startRecording} disabled={recording} className="px-3 py-2 bg-green-600 text-white rounded-md">Record</button>
-        <button onClick={stopRecording} disabled={!recording} className="px-3 py-2 bg-gray-200 rounded-md">Stop</button>
+      {/* Voice Recording Section */}
+      <div className="mt-3">
+        <p className="text-xs font-medium text-gray-600 mb-2">Voice Input:</p>
+        <div className="flex gap-2">
+          <button onClick={startRecording} disabled={recording} className="px-3 py-2 bg-green-600 text-white rounded-md disabled:bg-gray-300">Record</button>
+          <button onClick={stopRecording} disabled={!recording} className="px-3 py-2 bg-gray-200 rounded-md disabled:bg-gray-100">Stop</button>
+        </div>
+      </div>
+
+      {/* Text Input Section */}
+      <div className="mt-4">
+        <p className="text-xs font-medium text-gray-600 mb-2">Text Input:</p>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={textInput}
+            onChange={(e) => setTextInput(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleTextSubmit()}
+            placeholder="e.g., from HUB to Mary Gates Hall"
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button 
+            onClick={handleTextSubmit}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
+            Submit
+          </button>
+        </div>
       </div>
 
       <div className="mt-3 text-sm">
