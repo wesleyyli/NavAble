@@ -5,8 +5,8 @@ import { uwAvoids } from "./Stairs";
 
 export default function MyMap() {
   const containerRef = useRef(null);
-  let avoidsShow = true;
-  let avoidRoutes = true;
+  const [avoidsShow, setAvoidsShow] = useState(true);
+  const [avoidRoutes, setAvoidRoutes] = useState(true);
   const [recording, setRecording] = useState(false);
   const [status, setStatus] = useState(null);
   const mapRef = useRef(null);
