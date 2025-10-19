@@ -79,6 +79,22 @@ export default function ElevenLabsSpeechToText({ onLocations, onParsed }) {
     setRecording(false);
   }
 
+  function readPath(){
+    let startIndex = 0;
+    let endIndex = 0;
+    while(!transcript.startsWith("Path Description", startIndex)){
+      startIndex += 1;
+    }
+    endIndex = startIndex;
+    while(!transcript.startsWith("start", endIndex)){
+      endIndex += 1;
+    }
+    const description = transcript.substring(beginIndex + 1, endIndex);
+    const arr = transcript.split(",");
+    for(i = 0; i < arr.length; i++){
+      speak(arr[i]);
+    }
+  }
 
   return (
     <div className="p-3 bg-white rounded-md shadow-sm">

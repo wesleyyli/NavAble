@@ -8,8 +8,8 @@ const PORT = 3001;
 app.use(cors());
 app.use(express.json());
 
-const API_KEY = 'sk_49bd8f370b57a68e97eca113945a2486e16cb7776626705f'; // Replace this
-const VOICE_ID = '7p1Ofvcwsv7UBPoFNcpI'; // Replace this from https://api.elevenlabs.io/v1/voices
+const API_KEY = 'sk_49bd8f370b57a68e97eca113945a2486e16cb7776626705f'; // Replace this w/ env variable
+const VOICE_ID = '7p1Ofvcwsv7UBPoFNcpI'; //Replace this w/ env variable
 
 app.post('/speak', async (req, res) => {
   const { text } = req.body;
