@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/NavAble/static/css/main.97338fd7.css",
+    "main.js": "/NavAble/static/js/main.98a645ef.js",
+    "static/media/welcome.mp4": "/NavAble/static/media/welcome.85efb41e0839d9a4d6ea.mp4",
+    "static/media/BlackNavableGlow.png": "/NavAble/static/media/BlackNavableGlow.5083a1470a70235e687e.png",
+    "static/media/WhiteNavable.png": "/NavAble/static/media/WhiteNavable.19527959e9be321aa015.png",
+    "index.html": "/NavAble/index.html",
+    "main.97338fd7.css.map": "/NavAble/static/css/main.97338fd7.css.map",
+    "main.98a645ef.js.map": "/NavAble/static/js/main.98a645ef.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.97338fd7.css",
+    "static/js/main.98a645ef.js"
+  ]
+}
