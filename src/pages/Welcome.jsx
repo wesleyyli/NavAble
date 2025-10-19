@@ -1,6 +1,7 @@
 import '../App.css';
 import { speak } from '../App';
 import background from '../Videos/welcome.mp4'
+import logo from '../Assets/BlackNavableGlow.png'
 
 function Welcome({setPage}) {
 
@@ -16,15 +17,16 @@ function Welcome({setPage}) {
             className="absolute top-0 left-0 w-full h-full object-cover bg-black animate-fadeOut">
         </div>
         <div className="absolute inset-0 flex flex-col items-center justify-center ">
-            <p className="text-[160px] font-bold text-black animate-slideIn">NavAble</p>
+            {/* <p className="text-[160px] font-bold text-black animate-slideIn">NavAble</p> */}
+            <img className="w-3/5 animate-slideIn" src={logo} alt="Navable logo"></img>
             <button
             onClick={() => setPage("map")}
-            className="mt-4 p-2 bg-blue-500 rounded text-white"
+            className="w-1/3 h-1/6 font-sans text-7xl p-2 rounded-xl text-black animate-slideUp bg-white/30"
             type="button"
             >
             Start Mapping!
             </button>
-            <button
+            {/* <button
             onClick={() => speak("Testing")}
             className="mt-4 p-2 bg-orange-500 rounded text-white"
             type="button"
@@ -37,7 +39,7 @@ function Welcome({setPage}) {
             type="button"
             >
             Test Speech Input
-            </button>
+            </button> */}
         </div>
         
         
