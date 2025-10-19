@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import './App.css';
-import Welcome from './Pages/Welcome';
+import Welcome from './pages/Welcome';
 import Map from './Components/Map';
-import SpeechDemo from './Pages/SpeechDemo';
+import SpeechDemo from './pages/SpeechDemo';
 import logo from './Assets/WhiteNavable.png'
 
 function App() {
