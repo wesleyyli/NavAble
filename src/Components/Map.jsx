@@ -194,6 +194,10 @@ export default function MyMap() {
     }
   }
 
+  const handleToggle = () => {
+    setAvoidsShow(prev => !prev);
+    setAvoidRoutes(prev => !prev);
+  };
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -276,6 +280,10 @@ export default function MyMap() {
         >
           Stop
         </button>
+      </div>
+      <div className="absolute top-[10.5em] right-[0.75em] flex flex-col space-y-2 bg-white p-1 rounded shadow-lg ">
+        <button className="w-10 h-10 bg-red-500 font-black" onClick={handleToggle}>𓊍</button>
+
       </div>
     </div>
   );
