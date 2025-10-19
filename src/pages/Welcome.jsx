@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './App.css';
-import { speak } from './App';
-import background from './Videos/welcome.mp4'
+import { speak } from '../App';
+import background from '../Videos/welcome.mp4'
 
 function Welcome({setPage}) {
 

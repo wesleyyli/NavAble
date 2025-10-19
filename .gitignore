@@ -6,7 +6,6 @@
 /elevenlabs-tts/node_modules
 /.pnp
 .pnp.js
-/navable
 
 # testing
 /coverage
