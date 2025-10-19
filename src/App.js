@@ -2,6 +2,7 @@ import { useState } from 'react';
 import './App.css';
 import Welcome from './Pages/Welcome';
 import Map from './Components/Map';
+import SpeechDemo from './Pages/SpeechDemo';
 
 function App() {
   const [page, setPage] = useState("welcome");
@@ -18,6 +19,20 @@ function App() {
       <div>
         <div className='App-header'></div>
         <Map setPage={setPage}/>
+      </div>
+    );
+  }
+  else if (page === "speechdemo") {
+    return (
+      <div>
+        <SpeechDemo/>
+      </div>
+    );
+  }
+  else {
+    return (
+      <div className='text-6xl'>
+        Page does not exist!
       </div>
     );
   }

@@ -25,6 +25,20 @@ function Welcome({setPage}) {
             >
             Start Mapping!
             </button>
+            <button
+            onClick={() => speak("Testing")}
+            className="mt-4 p-2 bg-orange-500 rounded text-white"
+            type="button"
+            >
+            Test "Speak"
+            </button>
+            <button
+            onClick={() => setPage("speechdemo")}
+            className="mt-4 p-2 bg-red-500 rounded text-white"
+            type="button"
+            >
+            Test Speech Input
+            </button>
         </div>
         
         

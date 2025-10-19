@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import SpeechToText from '../components/SpeechToText';
+import SpeechToText from '../Components/SpeechToText';
 
 export default function SpeechDemo() {
   const [route, setRoute] = useState(null);
