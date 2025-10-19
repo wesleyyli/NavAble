@@ -7,7 +7,7 @@ export default function MyMap() {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   let avoidsShow = true;
-  let avoidRoutes = true;
+  let avoidsActive = true;
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -62,7 +62,7 @@ export default function MyMap() {
     const fromLoc = uwMarkers[1].coordinates;
     const toLoc = uwMarkers[2].coordinates;
 
-    const url = `https://api.geoapify.com/v1/routing?waypoints=${fromLoc.join(',')}|${toLoc.join(',')}&mode=walk&details=instruction_details&apiKey=${apiKey}`;
+    let url = `https://api.geoapify.com/v1/routing?waypoints=${fromLoc.join(',')}|${toLoc.join(',')}&mode=walk&details=instruction_details&apiKey=${apiKey}`;
     //const url = `https://api.geoapify.com/v1/routing?waypoints=47.6501,-122.3017|47.6536,-122.3078&mode=walk&apiKey=${apiKey}`;
 
     
@@ -92,7 +92,7 @@ export default function MyMap() {
       });
     }
 
-    if (avoidRoutes && uwAvoids.length > 0) {
+    if (avoidsActive && uwAvoids.length > 0) {
       url += `&avoid=location:`;
       url += uwAvoids.map((loc) => loc.join(',')).join('|');
     }
@@ -142,7 +142,7 @@ export default function MyMap() {
       mapRef.current?.remove();
       mapRef.current = null;
     };
-  }, []);
+  }, [avoidsShow, avoidsActive]);
 
   return <div ref={containerRef} style={{ width: "100%", height: "94vh" }} />;
 }

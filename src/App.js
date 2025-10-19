@@ -16,6 +16,7 @@ function App() {
   else if (page === "map") {
     return (
       <div>
+        <div className='App-header'></div>
         <Map setPage={setPage}/>
       </div>
     );
