@@ -89,8 +89,16 @@ export default function MyMap() {
 
       console.log('Start Coordinates:', startCoord);
       console.log('End Coordinates:', endCoord);
+      
+      // Check if either location is null
+      if (!startCoord || !endCoord) {
+        setStatus('Invalid Location');
+        setFromName(null);
+        setToName(null);
+        return;
+      }
+      
       handleLocations(startCoord, endCoord);
-
       setStatus('Done');
     } catch (error) {
       console.error('Error during parsing:', error);
@@ -300,6 +308,15 @@ export default function MyMap() {
         <div className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg z-10">
           <p className="text-sm font-semibold">
             Currently Displaying: <span className="font-bold">{fromName}</span> to <span className="font-bold">{toName}</span>
+          </p>
+        </div>
+      )}
+      
+      {/* Error Banner */}
+      {status === 'Invalid Location' && (
+        <div className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg z-10">
+          <p className="text-sm font-semibold">
+            Sorry, we couldn't quite catch that. Please try again.
           </p>
         </div>
       )}
