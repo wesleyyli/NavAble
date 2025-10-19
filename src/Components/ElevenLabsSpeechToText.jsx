@@ -19,8 +19,17 @@ export default function ElevenLabsSpeechToText({ onLocations, onParsed }) {
         try {
           const fd = new FormData();
           fd.append('file', blob, 'recording.webm');
-          const resp = await fetch('/api/elevenlab-stt', { method: 'POST', body: fd });
-          if (!resp.ok) throw new Error('STT proxy error');
+          
+          const resp = await fetch('/api/elevenlab-stt', { 
+            method: 'POST', 
+            body: fd
+          });
+          
+          if (!resp.ok) {
+            const errorText = await resp.text();
+            console.error('STT API Error Details:', errorText);
+            throw new Error(`STT proxy error: ${resp.status} - ${errorText}`);
+          }
           const data = await resp.json();
           const text = data.text ?? data.transcript ?? '';
           setTranscript(text);
